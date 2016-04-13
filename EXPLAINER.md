@@ -86,6 +86,23 @@ mutator.commit();
 // until that last moment.
 ```
 
+The preceding code adds `async*()` methods to all nodes,
+and has them take the transaction object as their first argument.
+An alternative shape is for the transaction object to "wrap" DOM nodes,
+and just expose the *normal* names for all the append operations:
+
+```javascript
+const app = new DOMAsyncAppender();
+
+for (let i = 0; i < 500; ++i) {
+  app(myTable).appendChild(createTableRow());
+}
+
+app.commit();
+```
+
+# What Is Visible Before It Finishes?
+
 An open question is what, if anything, to show between the time the async append is called and the time the operation completes.
 
 * One possibility is to add the nodes to the DOM immediately, but in an "inert" state,
@@ -95,6 +112,8 @@ An open question is what, if anything, to show between the time the async append
 * Another is to not add anything to the DOM,
 	but keep track of where the subtree would be added,
 	and relevant mutations (defined appropriately) again cancel the operation.
+
+# Script Elements
 
 `<script>` elements appended asyncly never run,
 just like ones added via `innerHTML`.
