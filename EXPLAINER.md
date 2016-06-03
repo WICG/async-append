@@ -27,14 +27,15 @@ chunk the work into broad phases --
 informally, "parsing", "styling", "layout", and "painting" --
 yielding back to the event loop between each phase
 (or doing it entirely in parallel, in UAs that support such).
-This chunking has a significant effect on perceived page latency,
-based on some early Chrome experiments.
+Based on early investigations, chunking the work into broad phases could reduce jank
+by 30-50% depending on browser.
 
-(Ideally, the UA would be able to chunk each phase too,
-chopping them into work-slices that fit within a frame's spare time,
-and making the work essentially jank-free.
-This is expected to be difficult work, though;
-initially requirements will just be to split up the main phases as described above.)
+While breaking work into broad phases is a simpler way to get a large win,
+later implementations of the API could chunk each phase too,
+chopping them into work-slices that fit within a frame's spare time. This would essentially 
+make DOM work jank-free. This level of chunking is expected to be difficult work, though,
+and shouldn't be required for a V0 of the API. Finer grained chunking should not affect the API
+surface.
 
 To prevent DOM creation from blocking the main thread, the rendering process needs to be broken up into chunks that the browser can schedule around other main thread tasks.
 
