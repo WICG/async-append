@@ -17,7 +17,8 @@ All of these would benefit from an ability to create and add DOM without blockin
 [YouTube Gaming](gaming.youtube.com) constructs its comment panel for a video when the user clicks on 'comments', janking the main thread for anywhere from 55-180 ms for rendering (depending on browser). The number gets as high as __500ms__ when including custom element construction.
 
 ## [gaming.youtube.com](https://gaming.youtube.com/watch?v=i0purbwzs4U) 
-The following numbers are ms measurements averaged over 5 times.
+The following numbers are ms measurements averaged over 5 times.<br />
+
 __Clicking on 'comments'__
 - Chrome
   - Style: 65
