@@ -14,18 +14,33 @@ In general, there are many UX patterns that lazily instantiate DOM:
 All of these would benefit from an ability to create and add DOM without blocking the main thread.
 
 # Case Study: YouTube Gaming
-[YouTube Gaming](gaming.youtube.com) constructs its entire comment panel for a video when the user clicks on 'comments', janking the main thread for almost __500ms__. Traces were repeated 3 times, values are in ms.
+[YouTube Gaming](gaming.youtube.com) constructs its comment panel for a video when the user clicks on 'comments', janking the main thread for anywhere from 55-180 ms for rendering (depending on browser). The number gets as high as __500ms__ when including custom element construction.
 
 ## [gaming.youtube.com](https://gaming.youtube.com/watch?v=i0purbwzs4U) 
+The following numbers are ms measurements averaged over 5 times.
 __Clicking on 'comments'__
 - Chrome
   - Style: 65
   - Layout: 100
+  - Paint: 15  
+- Safari
+  - Layout: 40
+  - Paint: 15
+- Firefox
+  - Layout: 40
   - Paint: 15
 
 __Scroll to bottom of 'comments'__
 - Chrome
   - Style: 30
+  - Layout: 15
+  - Paint: 10  
+- Safari
+  - Layout (placeholder images): 25
+  - Paint (placeholder images): 10
+  - Layout (content): 25
+  - Paint (content): 5
+- Firefox
   - Layout: 15
   - Paint: 10
 
