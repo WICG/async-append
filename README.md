@@ -16,14 +16,17 @@ All of these would benefit from an ability to create and add DOM without blockin
 # Case Study: YouTube Gaming
 [YouTube Gaming](gaming.youtube.com) constructs its entire comment panel for a video when the user clicks on 'comments', janking the main thread for almost __500ms__. Traces were repeated 3 times, values are in ms.
 
-__gaming.youtube.com (clicking on 'comments' in a video view)__
-- Style: 60 - 67 - 60
-- Layout: 120 - 62 - 45
-- Paint: 0 - 0 - 0
+## [gaming.youtube.com](https://gaming.youtube.com/watch?v=i0purbwzs4U) 
+__Clicking on 'comments'__
+- Chrome
+  - Style: 65
+  - Layout: 100
+  - Paint: 15
 
-__gaming.youtube.com (scroll to bottom of 'comments' in a video view)__
-- Style: 35 - 38 - 33
-- Layout: 10 - 23 - 13
-- Paint: 1 - 11 - 1
+__Scroll to bottom of 'comments'__
+- Chrome
+  - Style: 30
+  - Layout: 15
+  - Paint: 10
 
 
