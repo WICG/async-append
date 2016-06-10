@@ -18,9 +18,12 @@ if they do the standard "do pieces of the work across multiple timeouts" approac
 they'll instead get partially-constructed DOM showing,
 which can be even worse for user experience.
 
-This spec proposes to define a way to explicitly declare DOM appends to be "async",
+![synchronous rendering lifecycle](sync-lifecycle.png)
+
+This spec proposes a way to explicitly declare DOM appends to be "async",
 returning immediately with a promise that is fulfilled when the work is done
-(or rejected when the work is invalidated).
+(or rejected when the work is invalidated). This method would be a parallel option
+to the current, synchronous way to append DOM. 
 In the background, the user agent must,
 at minimum,
 chunk the work into broad phases --
@@ -29,6 +32,8 @@ yielding back to the event loop between each phase
 (or doing it entirely in parallel, in UAs that support such).
 Based on early investigations, chunking the work into broad phases could reduce jank
 by 30-50% depending on browser.
+
+![asynchronous rendering lifecycle](async-lifecycle.png)
 
 While breaking work into broad phases is a simpler way to get a large win,
 later implementations of the API could chunk each phase too,
