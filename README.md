@@ -23,7 +23,7 @@ There are also several UX patterns that lazily instantiate and append DOM:
 All of these would benefit from an ability to mutate DOM without blocking the main thread.
 
 # Case Study: YouTube Gaming
-[YouTube Gaming](gaming.youtube.com) constructs its comment panel for a video when the user clicks on 'comments', janking the main thread for anywhere from 55-180 ms for rendering (depending on browser). The number gets as high as __500ms__ when including custom element construction.
+[YouTube Gaming](https://gaming.youtube.com/) constructs its comment panel for a video when the user clicks on 'comments', janking the main thread for anywhere from 55-180 ms for rendering (depending on browser). The number gets as high as __500ms__ when including custom element construction.
 
 ## [gaming.youtube.com](https://gaming.youtube.com/watch?v=i0purbwzs4U)
 The following numbers are ms measurements averaged over 5 times.<br />
