@@ -1,23 +1,25 @@
 # Make rendering schedulable
 
-Today's DOM operations are synchronous: style resolution, layout, etc must be completed before control can be returned to the JS thread. This pauses not only scripts, but also events such as link navigation or touch scrolls (if there are non-passive event listeners subscribed).
+Today's DOM operations are synchronous. This pauses scripts and events such as link navigation or touch scrolls.
 
-If the script is mutating a *large* subtree, this can create noticeable jank. It's not too hard to achieve a 150ms+ delay, which is very noticeable to a user. The author can't reasonably break this up, either; if they do the standard "do pieces of the work across multiple timeouts" approach to de-janking, they'll instead get partially-constructed DOM showing, which can be even worse for user experience.
+Scripts that mutate *large* subtrees can create noticeable jank. It's not hard to achieve a 150ms+ delay while trying to mutate the DOM in reasonable ways. If web developers attempt to do pieces of this mutation work across multiple timeouts, they will show partially-constructed DOM, which can be even worse for the user experience than jank.
 
 ![synchronous rendering lifecycle](sync-lifecycle.png)
 
-This spec proposes a way to explicitly declare DOM mutations to be "async", returning immediately with a promise that is fulfilled when the work is done (or rejected if the work is invalidated). This API would be a parallel option to the current, synchronous way to mutate DOM.  
+This spec proposes a way to explicitly declare DOM mutations to be "async", returning immediately with a promise that is fulfilled when the work is done or rejected if the work is invalidated. This API would be a parallel option to the current, synchronous way to mutate DOM.  
 
-A developer could create a subtree to append or build up a set of mutations to be applied to the existing DOM. Once all the DOM mutations were calculated, the developer would call pass them to the async API. In the background, a user agent would, at minimum, chunk the resulting work into broad phases -- informally, "parsing", "styling", "layout", and "painting" -- yielding back to the event loop between each phase. Based on early investigations, chunking rendering work into broad phases could reduce jank by 30-50% depending on browser.
+A developer could create a subtree to append or build up a set of mutations to be applied to the existing DOM. Once all the DOM mutations were calculated, the developer would pass them to the async API. In the background, a user agent would, at minimum, chunk the resulting work into broad phases yielding back to the event loop between each phase. Based on early investigations, chunking rendering work into broad phases could reduce jank by 30-50% depending on browser.
 
 ![asynchronous rendering lifecycle](async-lifecycle.png)
 
-While breaking work into broad phases is a simpler way to get a large win, later implementations of the API could chunk each phase too, chopping them into work-slices that fit within a frame's spare time. This would essentially  make DOM work jank-free. This level of chunking is expected to be difficult work, and shouldn't be required for a V0 of the API.
+Later implementations of the API could further chunk each phase until they fit within a frame's spare time. This would essentially make DOM work jank-free. This level of chunking is expected to be difficult, and shouldn't be required for a V0 of the API.
 
 # Constraints
-It is important that this API closely matches the way that sites are manipulating DOM today. Large sites and frameworks are much more likely to use the feature if it is simply a matter of "feature detect and use async append if available". If the API requires an entire rewrite of DOM mutation logic, adoption will be low.
+We have heard from several developers that DOM mutations can only be async up to a point. After a certain number of frames, it is better to jank while focusing on render work rather than delay the UI update any further. This API should enable developers to specify how long the async operation is allowed to take before it becomes blocking. 
 
-Calculating DOM mutations in a worker is a natural thing to pair with async rendering. This API should be relatively unopinionated about input format, so that things like [virtual dom](https://github.com/Matt-Esch/virtual-dom), [`WorkerNode`](github.com/drufball/worker-node), and [`DOMChangeList`](https://github.com/whatwg/dom/issues/270) are all potentially supported.
+This API should closely match the way that sites are manipulating DOM today. Large sites and frameworks are much more likely to use the feature if adoption means "feature detect and swap sync mutations for async append if available". If the API requires an entire rewrite of DOM mutation logic, adoption will be low.
+
+Calculating DOM mutations in a worker is a natural thing to pair with async rendering. This API should be relatively unopinionated about input format, so that things like [virtual dom](https://github.com/Matt-Esch/virtual-dom), [`WorkerNode`](github.com/drufball/worker-node), and [`DOMChangeList`](https://github.com/whatwg/dom/issues/270) are all supported.
 
 # Possible API
 
