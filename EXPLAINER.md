@@ -28,11 +28,20 @@ The shape of the API is not nailed down yet.
 A simple possibility is to add "async" versions of all the append methods:
 
 ```javascript
+interface MutationResult {
+  // ... fields related the mutation ...
+
+  // Call commit to make the nodes visually appear. Promise.all() several
+  // operations and then commit() together to make them all appear
+  // together.
+  void commit();
+};
+
 partial interface ParentNode {
-  CancelablePromise<MutationResult> appendAsync((Node or DOMString)... nodes);
-  CancelablePromise<MutationResult> prependAsync((Node or DOMString)... nodes);
-  CancelablePromise<MutationResult> removeAsync();
-  CancelablePromise<MutationResult> insertBeforeAsync(Node node, Node? child);
+  Promise<MutationResult> appendAsync((Node or DOMString)... nodes, CancelToken token);
+  Promise<MutationResult> prependAsync((Node or DOMString)... nodes, CancelToken token);
+  Promise<MutationResult> removeAsync();
+  Promise<MutationResult> insertBeforeAsync(Node node, Node? child, CancelToken token);
 };
 ```
 
