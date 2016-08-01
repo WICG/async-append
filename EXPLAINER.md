@@ -40,9 +40,12 @@ interface MutationResult {
 partial interface ParentNode {
   Promise<MutationResult> appendAsync((Node or DOMString)... nodes, CancelToken token);
   Promise<MutationResult> prependAsync((Node or DOMString)... nodes, CancelToken token);
-  Promise<MutationResult> removeAsync();
   Promise<MutationResult> insertBeforeAsync(Node node, Node? child, CancelToken token);
 };
+
+partial interface ChildNode {
+  Promise<MutationResult> removeAsync();
+}
 ```
 
 Another possibility is to explicitly batch the async operations into a transaction. This makes it possible for the site to make edits to multiple parts of the DOM, and have them all show up at once when they're done preparing, rather than showing up piecemeal:
