@@ -31,12 +31,13 @@ partial interface Element {
      on Element and ChildNode */
 };
 
+[Constructor] // could add options in the future
 interface DOMBatch {
   readonly attribute boolean started;
   readonly attribute Promise<void> ready;
 
   void finish();
-  void cancel(); // or a cancel token to DOMBatch's constructor
+  void cancel(); // and/or a cancel token to the constructor
 }
 ```
 
