@@ -147,18 +147,26 @@ can invalidate this work,
 requiring the UA to throw out the work-so-far and start over.
 
 While the DOMBatch is in the "started" state,
-the UA must silently restart its async work
-whenever it's invalidated,
-but otherwise continue as normal.
+mutations that invalidate the async work
+must result in the async work being silently restarted.
+The DOMBatch *must not* proceed to the "ready" state
+if the completed async work has been invalidated;
+it can only transition when its async work is both finished
+*and* known to not be invalidated.
+The spec does not otherwise place any requirements on *when*
+the async work is restarted.
 
 While the DOMBatch is in the "ready" state,
-the UA *may* silently restart its async work
-whenever its invalidated
-(thus possibly causing a call to `finish()` to take extra synchronous time,
-if it's called before the work is readied again).
-It is not required to do so, however;
-it may simply wait until `finish()` is called
-and then synchronously redo the work.
+mutations that invalidate the async work
+must silently mark the async work as invalid.
+The UA *may* silently restart invalid async work at any time.
+If `finish()` is called while the async work is completed but invalid,
+the UA *must* silently restart the async work
+(as if `finish()` was called early).
+
+When the DOMBatch is in the "finished" state,
+the work has been committed
+and no further changes can invalidate it.
 
 The essential guarantee here is that
 an author can naively call `finish()` when the UA tells them the work is done
@@ -177,16 +185,27 @@ and avoid mutating the DOM otherwise if at all possible.
 
 # Possible Extensions/Changes
 
-* adding a `priority` argument to the DOMBatch constructor,
+* add a `priority` argument to the DOMBatch constructor,
   allowing the author to explicitly differentiate between "important" and "less important" mutations,
   and ensure that important updates don't get inadvertently starved and delayed by a flurry of trivial updates.
-* adding an `explicitStart` argument to the DOMBatch constructor,
+* add an `explicitStart` argument to the DOMBatch constructor,
   that turns off the DOMBatch's "automatically start at end of microtask" behavior,
   so work can be batched across microtasks
   and then explicitly started
   (by some additional method added to DOMBatch).
-* switching from a `started` boolean to a `state` enum?
-* having the "fire and forget" mutation methods return a promise
+* switch from a `started` boolean to a `state` enum?
+* have the "fire and forget" mutation methods return a promise
   (fulfilled when the work is "finished"),
   so you can track their work
   without having to explicitly create and manage a DOMBatch.
+* add an explicit API to be notified when a DOMBatch's work was invalidated,
+  so you can log it and/or cancel the work and restart at a later time.
+  Maybe just asynchronously throw an error at `window`,
+  like ResizeObserver does,
+  so it won't interrupt any running code
+  but can be easily picked up by error analytics?
+* Switch to taking the DOMBatch as the last, optional argument.
+  Are there any n-ary mutation functions?
+  Those are the only problematic ones,
+  as they have to be handled in prose
+  rather than IDL.
