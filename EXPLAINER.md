@@ -179,6 +179,12 @@ such as thru logging a message to the console.
 Authors are encouraged to explicitly batch mutation work with a DOMBatch,
 and avoid mutating the DOM otherwise if at all possible.
 
+Issue: Unclear what to do if the mutation doesn't just invalidate the async work,
+but makes it impossible
+(such as deleting the parent you're trying to `asyncAppendChild()` to).
+Reject ready promise
+and throw an async error at `window`?
+
 # Script Elements
 
 `<script>` elements appended asyncly never run, just like ones added via `innerHTML`.
