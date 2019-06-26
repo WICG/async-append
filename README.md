@@ -1,4 +1,7 @@
-# async-append
+# Archive of async-append
+
+**This incubation is superseded by https://github.com/WICG/display-locking. This repository is archived for historical purposes.**
+
 A way to create/mutate DOM and add it to the document without blocking the main thread. For proposed solutions, see the [EXPLAINER](EXPLAINER.md).
 
 # Problem
